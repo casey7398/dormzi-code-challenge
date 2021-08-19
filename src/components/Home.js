@@ -11,7 +11,7 @@ import CarouselModal from "./CarouselModal";
 // todo: Move all inline styles to classes
 // add loading states (skeletons) to pokemon images on card view
 
-function PokemonCardItem({ pokemon }: any) {
+function PokemonCardItem({ pokemon }) {
   return (
     <>
       <Link to={`/details/${pokemon.id}`}>
@@ -36,7 +36,7 @@ function PokemonCardItem({ pokemon }: any) {
   );
 }
 
-function PokemonListItem({ pokemon }: any) {
+function PokemonListItem({ pokemon }) {
   return (
     <div className="list-container">
       <Link to={`/details/${pokemon.id}`}>
@@ -57,7 +57,7 @@ function PokemonListItem({ pokemon }: any) {
   );
 }
 
-function usePagination(data: any, size: any) {
+function usePagination(data, size) {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize, setPageSize] = useState(0);
@@ -101,22 +101,33 @@ function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pageSize, setPageSize] = useState(5);
   const [isList, setIsList] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const paged = usePagination(pokemonData, pageSize);
 
   useEffect(() => {
-    axios.get(`http://pokemon.test.dormzi.com/pokemon`).then((res) => {
-      setPokemonData(res.data);
-    });
+    axios
+      .get(`http://pokemon.test.dormzi.com/pokemon`)
+      .then((res) => {
+        setPokemonData(res.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
+
+  const setModalState = (x) => {
+    setModalOpen(x);
+    document.body.className = x === true ? "hidden" : null;
+  };
 
   return (
     <>
       {modalOpen && (
-        <CarouselModal data={pokemonData} setModalOpen={setModalOpen} />
+        <CarouselModal data={pokemonData} setModalOpen={setModalState} />
       )}
       <div className="carousel-modal-button-container">
-        <div className="button" onClick={() => setModalOpen(true)}>
+        <div className="button" onClick={() => setModalState(true)}>
           {" "}
           Open Image Carousel <LaunchIcon style={{ marginLeft: 5 }} />
         </div>
@@ -159,14 +170,18 @@ function Home() {
           </div>
         </div>
         <div>
-          {isList ? (
-            paged.currentPageData.map((x: any) => (
+          {loading ? (
+            <div>
+              <h3>Please wait, loading data...</h3>
+            </div>
+          ) : isList ? (
+            paged.currentPageData.map((x) => (
               <PokemonListItem key={x.id} pokemon={x} />
             ))
           ) : (
             <>
               <Grid container spacing={2}>
-                {paged.currentPageData.map((x: any) => (
+                {paged.currentPageData.map((x) => (
                   <Grid item lg={3}>
                     <PokemonCardItem key={x.id} pokemon={x} />
                   </Grid>
