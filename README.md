@@ -1,4 +1,4 @@
-# Dormzi Coding Challenge | Casey McIntosh
+# Dormzi Coding Challenge (4 hours max allowed) | Casey McIntosh
 
 To get started, simply run:
 
